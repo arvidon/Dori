@@ -7,7 +7,10 @@ export const agent = async (req, res) => {
     try {
         const { prompt, conversationId, agent } = req.body
 
+        console.log("🚨 CONTROLLER RECEIVED AGENT:", agent)
+
         //await redis.del(`messages-${conversationId}`)
+
         console.log("🟢 CONTROLLER START")
         console.log("Prompt:", prompt)
         console.log("Conversation:", conversationId)
@@ -25,6 +28,12 @@ export const agent = async (req, res) => {
         console.log("✅ User message saved")
 
         console.log("🧠 Starting graph...")
+
+        console.log("🚨 SENDING TO GRAPH:", {
+            prompt,
+            conversationId,
+            agent
+        })
 
         const result = await graph.invoke({
             prompt,

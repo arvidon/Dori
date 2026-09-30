@@ -3,6 +3,7 @@ import { getModel } from "../config/llmModels.js"
 import { getMemory } from "../config/memory.js"
 
 export const chat = async (state) => {
+     console.log("💬💬💬 CHAT AGENT CALLED 💬💬💬");
     try{
             const llm = await getModel("chat")
 

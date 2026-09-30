@@ -1,65 +1,88 @@
-import { getModel } from "../config/llmModels.js"
-import axios from "axios"
-import { uploadToS3 } from "../utils/uploadTos3.js"
-import { getFromS3 } from "../utils/getFromS3.js"
+import { getModel } from "../config/llmModels.js";
+import axios from "axios";
+import { uploadToS3 } from "../utils/uploadTos3.js";
+import { getFromS3 } from "../utils/getFromS3.js";
 
-export const imageGenAgent = async(state) => {
-    try{
-            const llm = await getModel("image")
-            const res = await llm.invoke(`
-                    You are an elite AI image prompt engineer.
+export const imageGenAgent = async (state) => {
+    console.log("🔥🔥🔥 IMAGE AGENT ACTUALLY CALLED 🔥🔥🔥");
+    console.log("IMAGE STATE:", state);
+    try {
+        const llm = await getModel("image");
 
-                    Convert the user request into a highly detailed image generation prompt.
+        const res = await llm.invoke(`
+You are an elite AI image prompt engineer.
 
-                    Requirements:
-                    - Cinematic lighting
-                    - Professional Composition
-                    - Ultra realistic
-                    - High detail
-                    - Beautiful color palette
-                    - Sharp focus
-                    - 8K quality
-                    - Photorealistic
-                    - Depth of field
-                    - Professional photography
-                    - Stunning visuals
+Convert the user request into a highly detailed image generation prompt.
 
-                    Return only the image prompt.
+Requirements:
+- Cinematic lighting
+- Professional composition
+- Ultra realistic
+- High detail
+- Beautiful color palette
+- Sharp focus
+- 8K quality
+- Photorealistic
+- Depth of field
+- Professional photography
+- Stunning visuals
 
-                    User Request:
-                    ${state.prompt}
-                `)
+Return only the image prompt.
 
-                const prompt = res.content.trim()
+User Request:
+${state.prompt}
+        `);
 
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`
+        const prompt = res.content.trim();
 
-                const imageRes = await axios.get(imageUrl, {responseType: "arraybuffer"})
+        console.log("🎨 IMAGE PROMPT:", prompt);
 
-                console.log(imageRes)
+        const imageUrl =
+            `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
 
-                const buffer = Buffer.from(imageRes.data)
-                const filename = `image-${Date.now()}.png`
+        const imageRes = await axios.get(imageUrl, {
+            responseType: "arraybuffer"
+        });
 
-                await uploadToS3(filename, buffer, "image/png")
-                const downloadUrl = await getFromS3(filename, 24*60*60)
+        const buffer = Buffer.from(imageRes.data);
 
-                return{
-                    ...state,
-                    aiResponse:`
+        const filename = `image-${Date.now()}.png`;
 
-                        ![Generated Image](${downloadUrl})
+        const key = await uploadToS3(
+            filename,
+            buffer,
+            "image/png"
+        );
 
-                        [Download Image](${downloadUrl})
+        console.log("🖼️ S3 IMAGE KEY:", key);
 
-                        Link expires in 10 Minutes
-                    `
-                }
-        }catch(error){
-            return{
-                ...state,
-                aiResponse: "Failed to generate image"
-            }
+        const downloadUrl = await getFromS3(
+            key,
+            10 * 60
+        );
+
+        console.log("🔗 IMAGE URL:", downloadUrl);
+
+        return {
+            ...state,
+
+            aiResponse: `# Image Generated
+
+![Generated Image](${downloadUrl})
+
+[Download Image](${downloadUrl})
+
+_Link expires in 10 minutes._`,
+
+            images: [downloadUrl]
+        };
+
+    } catch (error) {
+        console.error("❌ IMAGE GENERATION ERROR:", error);
+
+        return {
+            ...state,
+            aiResponse: "Failed to generate image"
+        };
     }
-
-}
+};

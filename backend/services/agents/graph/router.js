@@ -1,76 +1,83 @@
-import { getModel } from "../config/llmModels.js" 
+import { getModel } from "../config/llmModels.js";
 
+export const router = async (state) => {
 
-export const router = async(state) => {
-
-    if(state.agent && state.agent!=="auto"){
-        return{
+    if (state.agent && state.agent !== "auto") {
+        return {
             ...state,
             agent: state.agent
-        }
+        };
     }
 
+    const llm = await getModel("router");
 
-    const llm = getModel("router")
-    const prompt = `You are an agent router.
-    
-    Available agents:
-    
-    - chat
-    - search
-    - coding
-    - pdf
-    - ppt
-    - image
+    const prompt = `
+You are an agent router.
 
-    Rules:
+Choose exactly ONE agent.
 
-    chat:
-    General conversation,
-    explanations,
-    learning,
-    questions.
+Available agents:
 
-    search:
-    current events,
-    latest information,
-    news,
-    recent developments,
-    internet lookup.
+chat
+search
+coding
+pdf
+ppt
+imageGen
 
-    coding:
-    Generate code,
-    debug code,
-    build projects,
-    architecture,
-    API design.
+Definitions:
 
-    pdf: 
-    Questions about generate PDFs,
-    or document context.
+chat:
+General conversation, explanations, learning, normal questions.
 
-    ppt:
-    Questions about generate ppts
-    or ppt context.
+search:
+Current events, latest information, news, recent developments, internet lookup.
 
-    Image:
-    Generate image
+coding:
+Generate code, debug code, build projects, architecture, API design.
 
-    Return ONLY one word:
+pdf:
+Generate a PDF or document.
 
-    chat 
-    search
-    coding
-    pdf
-    Image
+ppt:
+Generate a PowerPoint presentation.
 
-    User Query:
-    ${state.prompt}
-    `
-    const response = await llm.invoke(prompt)
-    console.log(response)
-    return{
+imageGen:
+Generate or create an image, picture, illustration, photo, artwork, visual, or any other image.
+
+IMPORTANT:
+If the user says "generate an image", "generate a cat", "create a picture", "make an image", "draw a cat", or similar visual-generation request, choose imageGen.
+
+Return ONLY ONE of these exact values:
+
+chat
+search
+coding
+pdf
+ppt
+imageGen
+
+User Query:
+${state.prompt}
+`;
+
+    const response = await llm.invoke(prompt);
+
+    console.log("🚦 ROUTER RAW RESPONSE:", response.content);
+
+    let agent = response.content
+        .trim()
+        .replace(/[`"' ]/g, "");
+
+    console.log("🚦 ROUTER FINAL AGENT:", agent);
+
+    // Safety normalization
+    if (agent.toLowerCase() === "image") {
+        agent = "imageGen";
+    }
+
+    return {
         ...state,
-        agent:response.content.trim().toLowerCase()
-    }
-}
+        agent
+    };
+};
