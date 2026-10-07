@@ -2,10 +2,14 @@ import axios from "axios"
 import { graph } from "../graph/graph.js"
 import { addMessage } from "../config/memory.js"
 import redis from "../../../shared/redis/redis.js"
+import fs from "node:fs/promises"
 
 export const agent = async (req, res) => {
     try {
         const { prompt, conversationId, agent } = req.body
+        const file = req.file
+        console.log("file", file)
+        const userId = req.headers["x-user-id"]
 
         console.log("🚨 CONTROLLER RECEIVED AGENT:", agent)
 
@@ -38,7 +42,9 @@ export const agent = async (req, res) => {
         const result = await graph.invoke({
             prompt,
             conversationId,
-            agent
+            agent,
+            userId,
+            file
         })
 
         console.log("✅ Graph finished")
@@ -70,5 +76,7 @@ export const agent = async (req, res) => {
         return res.status(500).json({
             message: `agent error ${error.message}`
         })
+    } finally {
+        if (req.file?.path) await fs.unlink(req.file.path).catch(() => {})
     }
 }

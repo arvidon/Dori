@@ -1,10 +1,11 @@
 import { searchTool } from "../config/tavily.js"
+import { deductCredits } from "../utils/deductCredits.js";
 
 export const searchAgent = async (state) => {
     try {
         console.log("🔎 SEARCH AGENT STARTED")
         console.log("Query:", state.prompt)
-
+        await deductCredits(state.userId, "search")
         const results = await searchTool.invoke({
             query: state.prompt
         })

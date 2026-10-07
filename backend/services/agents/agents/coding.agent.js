@@ -1,4 +1,5 @@
 import { getModel } from "../config/llmModels.js"
+import { deductCredits } from "../utils/deductCredits.js"
 
 export const coding = async(state) => {
     const intentLlm = await getModel("intent")
@@ -100,6 +101,7 @@ export const coding = async(state) => {
         const data = JSON.parse(content)
 
         console.log(data)
+        await deductCredits(state.userId, "coding")
         return{
             ...state,
             aiResponse: "code generated successfully.",
@@ -132,6 +134,8 @@ export const coding = async(state) => {
         `)
 
         const data = res.content
+        await deductCredits(state.userId, "coding")
+        
         return{
             ...state,
             aiResponse:data,

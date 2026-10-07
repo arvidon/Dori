@@ -1,13 +1,13 @@
 import { ChatGroq } from "@langchain/groq"
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai"
 import {ChatOpenRouter} from "@langchain/openrouter"
 
 const groq = new ChatGroq({
     model: "openai/gpt-oss-120b"
 })
 
-const gemini = new ChatGoogleGenerativeAI({
-    model: "gemini-2.5-flash"
+const vision = new ChatGroq({
+    model: process.env.GROQ_VISION_MODEL || "qwen/qwen3.8-27b",
+    maxTokens: 2500
 })
 
 const openrouter = new ChatOpenRouter({
@@ -26,6 +26,9 @@ export const getModel = (agent) => {
 
         case "coding":
             return openrouter
+            
+        case "imageAnalyzer":
+            return vision
 
         default:
             return groq

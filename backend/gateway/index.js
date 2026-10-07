@@ -12,13 +12,21 @@ dotenv.config()
 const port = process.env.PORT
 
 const app = express()
+// Allow an explicit comma-separated list, since Vite can use another local port.
+const frontendOrigins = (process.env.FRONTEND_URL || "")
+    .split(",")
+    .map(origin => origin.trim())
+    .filter(Boolean)
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: frontendOrigins,
     credentials:true
 }))
 
 app.use(morgan("dev"))
 app.use(cookieParser())
+
+app.use("/api/auth/update-plan", (_req, res) => res.sendStatus(404))
 
 app.use(
     "/api/auth",
@@ -31,8 +39,13 @@ app.use(
 )
 
 app.use("/api/chat", protect, proxyWithHeader(process.env.CHAT_SERVICE))
-app.use("/api/agents", protect, proxy(process.env.AGENT_SERVICE))
-
+app.use("/api/agents", protect, proxyWithHeader(process.env.AGENT_SERVICE, {
+    reqAsBuffer: true,
+    reqBodyEncoding: null,
+    // Multer allows 20 MB files; leave room for multipart fields and boundaries.
+    limit: "21mb"
+}))
+app.use("/api/billing", protect, proxyWithHeader(process.env.BILLING_SERVICE))
 app.get("/api/me", protect, getCurrentUser)
 
 app.get("/", (req, res) => {

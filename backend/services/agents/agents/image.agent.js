@@ -2,6 +2,7 @@ import { getModel } from "../config/llmModels.js";
 import axios from "axios";
 import { uploadToS3 } from "../utils/uploadTos3.js";
 import { getFromS3 } from "../utils/getFromS3.js";
+import { deductCredits } from "../utils/deductCredits.js";
 
 export const imageGenAgent = async (state) => {
     console.log("🔥🔥🔥 IMAGE AGENT ACTUALLY CALLED 🔥🔥🔥");
@@ -43,6 +44,8 @@ ${state.prompt}
         const imageRes = await axios.get(imageUrl, {
             responseType: "arraybuffer"
         });
+
+        await deductCredits(state.userId, "image")
 
         const buffer = Buffer.from(imageRes.data);
 

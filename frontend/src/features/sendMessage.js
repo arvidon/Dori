@@ -4,7 +4,7 @@ async function sendMessage(payload) {
     try {
         console.log("🚀 Sending request to agent...")
         console.log("📦 PAYLOAD:", payload)
-        console.log("🆔 conversationId:", payload?.conversationId)
+        console.log("🆔 conversationId:", payload instanceof FormData ? payload.get("conversationId") : payload?.conversationId)
 
         const { data } = await api.post("/api/agents/chat", payload)
 
