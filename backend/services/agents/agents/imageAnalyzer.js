@@ -2,9 +2,11 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages"
 import fs from "fs/promises"
 import { getModel } from "../config/llmModels.js"
 import { deductCredits } from "../utils/deductCredits.js"
+import { checkAgentLimit } from "../config/agentLimit.js"
 
 export const imageAnalyzer = async (state) => {
     try {
+        await checkAgentLimit(state.userId, "image")
         if (!state.file?.path) throw new Error("Please upload an image to analyze")
         const llm = await getModel("imageAnalyzer")
 
@@ -52,7 +54,10 @@ Rules:
 
         console.error("Image analyzer error:", error)
 
-        throw new Error(`Image analysis failed: ${error.message}`, { cause: error })
+            return{
+                ...state,
+                aiResponse: error?.data?.message || "Failed to Analyze image..."
+            }
 
     } finally {
 

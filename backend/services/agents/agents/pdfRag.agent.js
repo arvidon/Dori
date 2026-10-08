@@ -5,10 +5,12 @@ import { vectorStore } from "../config/vectorDb.js"
 import { HumanMessage, SystemMessage } from "@langchain/core/messages"
 import { deductCredits } from "../utils/deductCredits.js"
 import { getModel } from "../config/llmModels.js"
+import { checkAgentLimit } from "../config/agentLimit.js"
 
 export const pdfRag = async (state) => {
     let pdf
     try {
+        await checkAgentLimit(state.userId, "pdf")
         if (!state.file?.path) throw new Error("Please upload a PDF to analyze")
         const buffer = fs.readFileSync(state.file.path)
 
@@ -84,7 +86,10 @@ export const pdfRag = async (state) => {
     } catch (error) {
         console.error("PDF RAG error:", error)
 
-        throw new Error(`PDF analysis failed: ${error.message}`, { cause: error })
+        return{
+            ...state,
+            aiResponse: error?.data?.message || "Failed to Analyze PDF..."
+        }
 
     } finally {
         if (pdf) await pdf.destroy().catch(() => {})

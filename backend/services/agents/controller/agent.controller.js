@@ -4,7 +4,7 @@ import { addMessage } from "../config/memory.js"
 import redis from "../../../shared/redis/redis.js"
 import fs from "node:fs/promises"
 
-export const agent = async (req, res) => {
+export const agent = async (req, res, next) => {
     try {
         const { prompt, conversationId, agent } = req.body
         const file = req.file
@@ -71,11 +71,12 @@ export const agent = async (req, res) => {
         })
 
     } catch (error) {
-        console.error("❌ AGENT CONTROLLER ERROR:", error)
+        // console.error("❌ AGENT CONTROLLER ERROR:", error)
 
-        return res.status(500).json({
-            message: `agent error ${error.message}`
-        })
+        // return res.status(500).json({
+        //     message: `agent error ${error.message}`
+        // })
+        next(error)
     } finally {
         if (req.file?.path) await fs.unlink(req.file.path).catch(() => {})
     }

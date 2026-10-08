@@ -20,7 +20,7 @@ function ChatArea() {
                 const data = await getMessages(selectedConversation?._id)
                 dispatch(setMessages(data))
                 const latestArtifacts = [...data].reverse().find(msg=>msg.artifacts && msg.artifacts.length > 0)
-                dispatch(setArtifacts(latestArtifacts.artifacts || []))
+                dispatch(setArtifacts(latestArtifacts?.artifacts || []))
             }
         }
         getMesg()

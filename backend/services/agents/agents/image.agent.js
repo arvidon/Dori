@@ -3,8 +3,10 @@ import axios from "axios";
 import { uploadToS3 } from "../utils/uploadTos3.js";
 import { getFromS3 } from "../utils/getFromS3.js";
 import { deductCredits } from "../utils/deductCredits.js";
+import { checkAgentLimit } from "../config/agentLimit.js";
 
 export const imageGenAgent = async (state) => {
+    await checkAgentLimit(state.userId, "image")
     console.log("🔥🔥🔥 IMAGE AGENT ACTUALLY CALLED 🔥🔥🔥");
     console.log("IMAGE STATE:", state);
     try {
@@ -83,9 +85,9 @@ _Link expires in 10 minutes._`,
     } catch (error) {
         console.error("❌ IMAGE GENERATION ERROR:", error);
 
-        return {
-            ...state,
-            aiResponse: "Failed to generate image"
-        };
+            return{
+                ...state,
+                aiResponse: error?.data?.message || "Failed to generate image..."
+            }
     }
 };
