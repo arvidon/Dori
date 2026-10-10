@@ -10,6 +10,7 @@ const vision = new ChatGroq({
     maxTokens: 2500
 })
 
+// Coding returns whole project files as JSON, so it needs far more output room.
 const openrouter = new ChatOpenRouter({
     model: "deepseek/deepseek-chat",
     temperature: 0,

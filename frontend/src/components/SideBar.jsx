@@ -26,6 +26,7 @@ import {
 } from "../redux/conversationSlice";
 
 import { setUserdata } from "../redux/userSlice";
+import { setArtifacts, setMessages } from "../redux/messageSlice";
 
 import BillingDrawer from "./billingDrawer";
 
@@ -73,6 +74,8 @@ function SideBar() {
       if (!data) return;
 
       dispatch(addConversation(data));
+      dispatch(setMessages([]));
+      dispatch(setArtifacts([]));
       dispatch(setSelectedConversation(data));
 
       // Close mobile sidebar after selecting a conversation.
@@ -94,6 +97,8 @@ function SideBar() {
    * Start a blank chat.
    */
   const handleNewChat = () => {
+    dispatch(setMessages([]));
+    dispatch(setArtifacts([]));
     dispatch(setSelectedConversation(null));
     setMobileOpen(false);
   };
