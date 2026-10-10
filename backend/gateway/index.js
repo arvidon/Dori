@@ -49,7 +49,7 @@ app.use("/api/billing", protect, proxyWithHeader(process.env.BILLING_SERVICE))
 app.get("/api/me", protect, getCurrentUser)
 
 app.get("/", (req, res) => {
-    res.json({message: "hello from gateway v5555555"})
+    res.json({message: "hello from gateway v5555555663"})
 })
 
 app.listen(port, ()=>{
