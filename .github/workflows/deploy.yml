@@ -156,6 +156,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: build frontend
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_SERVER_URL: ${{ secrets.VITE_SERVER_URL }}
+          VITE_RAZORPAY_KEY_ID: ${{ secrets.VITE_RAZORPAY_KEY_ID }}
         run: |
           cd frontend
           npm install
