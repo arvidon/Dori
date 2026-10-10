@@ -5,9 +5,9 @@ import getMessages from "../features/getMessages";
 import { setArtifacts, setMessages } from "../redux/messageSlice";
 import { useEffect } from "react";
 import MessageList from "./MessageList";
-import ChatInput from "./chatInput.jsx";
+import ChatInput from "./chatInputs";
 
-
+//great
 
 function ChatArea() {
 
