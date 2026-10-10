@@ -287,7 +287,7 @@ function SideBar() {
 
           {/* Conversation list */}
           <div className="flex-1 overflow-y-auto px-2.5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {conversations.map((conversation) => {
+            {conversations?.map((conversation) => {
               const isActive =
                 selectedConversation?._id === conversation?._id;
 

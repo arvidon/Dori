@@ -5,6 +5,7 @@ import {
   ImageIcon,
   MessageSquare,
   Mic,
+  MicOff,
   Paperclip,
   Presentation,
   Send,
@@ -41,9 +42,60 @@ function ChatInput() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState("");
+  //const [listening, setListening] = useState(false)
+ // const recognitionRef = useRef(null)
 
   const fileRef = useRef(null);
 
+//  useEffect(() => {
+//   const SpeechRecognition =
+//     window.SpeechRecognition || window.webkitSpeechRecognition;
+
+//   if (!SpeechRecognition) {
+//     console.warn("Speech recognition is not supported");
+//     return;
+//   }
+
+//   const recognition = new SpeechRecognition();
+
+//   recognition.lang = "en-US";
+//   recognition.interimResults = true;
+//   recognition.continuous = true;
+
+//   recognition.onresult = (event) => {
+//     let transcript = "";
+
+//     for (
+//       let index = event.resultIndex;
+//       index < event.results.length;
+//       index++
+//     ) {
+//       transcript += event.results[index][0].transcript;
+//     }
+
+//     setValue(transcript);
+//   };
+
+//   recognition.onend = () => {
+//     setListening(false);
+//   };
+
+//   recognitionRef.current = recognition;
+
+//   return () => {
+//     recognition.stop();
+//   };
+// }, []);
+
+//   const toggleMic = () => {
+//     if(!recognitionRef.current){
+//         alert("speech recognition is not supported")
+//         setListening(false)
+//     }else{
+//         recognitionRef.current.start()
+//         setListening(true)
+//     }
+//   }
   /* -------------------------------------------------- */
   /* Redux                                               */
   /* -------------------------------------------------- */
@@ -670,6 +722,7 @@ function ChatInput() {
 
             {/* Microphone */}
             <button
+           // onClick={toggleMic}
               type="button"
               disabled={isSending}
               className="
@@ -693,7 +746,7 @@ function ChatInput() {
                 disabled:cursor-not-allowed
               "
             >
-              <Mic size={16} />
+                <Mic size={16} />
             </button>
           </div>
 
