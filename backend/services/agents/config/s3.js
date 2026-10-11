@@ -2,8 +2,9 @@ import { S3Client } from "@aws-sdk/client-s3";
 
 export const s3 = new S3Client({
     region: process.env.AWS_REGION ?? process.env.AWS_REIGON,
-    credentials: {
+    // Use static keys only when set; otherwise the ECS task role supplies credentials.
+    credentials: process.env.AWS_ACCESS_KEY_ID ? {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_KEY
-    }
+    } : undefined
 })
